@@ -3,11 +3,11 @@ declare(strict_types=1);
 namespace Easy\JWTAuth;
 
 use Lcobucci\JWT\Token\Plain;
-use Easy\JWTAuth\Util\JWTUtil;
-use Easy\JWTAuth\Util\TimeUtil;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use Easy\JWTAuth\Util\TimeUtil;
 
 class BlackList extends AbstractJWT
 {
@@ -26,7 +26,7 @@ class BlackList extends AbstractJWT
      * 把token加入到黑名单中
      * @param Plain $token
      * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addTokenBlack(Plain $token, array $config = []): bool
     {
@@ -51,7 +51,7 @@ class BlackList extends AbstractJWT
      * 判断token是否已经加入黑名单
      * @param $claims
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function hasTokenBlack($claims, array $config = [])
     {
@@ -60,11 +60,10 @@ class BlackList extends AbstractJWT
             $val = $this->cache->get($cacheKey);
             return !empty($val['valid_until']) && !TimeUtil::isFuture($val['valid_until']);
         }
-
         if ($config['blacklist_enabled'] && $config['login_type'] == 'sso') {
             $val = $this->cache->get($cacheKey);
             // 这里为什么要大于等于0，因为在刷新token时，缓存时间跟签发时间可能一致，详细请看刷新token方法
-            if (! is_null($claims['iat']) && !empty($val['valid_until'])) {
+            if (!is_null($claims['iat']) && !empty($val['valid_until'])) {
                 $isFuture = ($claims['iat']->getTimestamp() - $val['valid_until']) >= 0;
             } else {
                 $isFuture = false;
@@ -79,7 +78,7 @@ class BlackList extends AbstractJWT
      * 黑名单移除token
      * @param $key  token 中的jit
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function remove($key)
     {
@@ -89,7 +88,7 @@ class BlackList extends AbstractJWT
     /**
      * 移除所有的token缓存
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function clear()
     {

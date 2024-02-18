@@ -83,10 +83,18 @@ abstract class AbstractJWT implements JWTInterface
 
         // 合并场景配置，并且兼容2.0.6以下的配置
         $config = $this->config->get($this->configPrefix);
-        if (empty($config['supported_algs'])) $config['supported_algs'] = $this->supportedAlgs;
-        if (empty($config['symmetry_algs'])) $config['symmetry_algs'] = $this->symmetryAlgs;
-        if (empty($config['asymmetric_algs'])) $config['asymmetric_algs'] = $this->asymmetricAlgs;
-        if (empty($config['blacklist_prefix'])) $config['blacklist_prefix'] = 'easycmf_jwt';
+        if (empty($config['supported_algs'])) {
+            $config['supported_algs'] = $this->supportedAlgs;
+        }
+        if (empty($config['symmetry_algs'])) {
+            $config['symmetry_algs'] = $this->symmetryAlgs;
+        }
+        if (empty($config['asymmetric_algs'])) {
+            $config['asymmetric_algs'] = $this->asymmetricAlgs;
+        }
+        if (empty($config['blacklist_prefix'])) {
+            $config['blacklist_prefix'] = 'easycmf_jwt';
+        }
         $scenes = $config['scene'];
         unset($config['scene']);
         foreach ($scenes as $key => $scene) {
